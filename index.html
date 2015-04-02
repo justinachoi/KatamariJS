@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Katamari JS</title> 
+
+<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+
+<!-- for CreateJS and ZIMjs http://zimjs.com - free to modify - Dan Zen 2015 -->
+<!-- see http://zimjs.com/templates for more templates and meta tags -->
+
+<script>var zon = true; // true for comments from zim code</script>
+<script src="js/zim.js"></script><!-- take off _min to see code -->
+<script src="js/createjs.js"></script> 
+<!-- or can go to zimjs.com and createjs.com for individual modules -->
+
+<script src="view.js"></script>
+<script src="controller.js"></script>
+
+<style>
+	body {margin:0px; padding:0px; background-color:#230d41;}
+	#myCanvas {position:absolute; background-color:#230d41;}
+</style>
+
+<script>
+
+var scaling = "full"; // full automatically sets width and height to window size
+var width = null;
+var height = null;
+var stage;
+var stageW;
+var stageH;
+var katamari;
+
+
+var frame = new zim.Frame(scaling, width, height); 
+frame.on("ready", function() {	
+	zog("ready from Katamari");
+
+	stage = frame.stage;
+	stageW = frame.stageW;
+	stageH = frame.stageH;
+
+	//P R E L O A D
+	var contentPath = "images/";
+	var manifest = [{src:"ball.png", id:"ball"}, {src:"balloon.png", id:"balloon"}, {src:"bulb.png", id:"bulb"}, {src:"candy.png", id:"candy"}, {src:"cheese.png", id:"cheese"}, {src:"lego.png", id:"lego"}, {src:"pie.png", id:"pie"}, {src:"shroom.png", id:"shroom"}, {src:"tennisball.png", id:"tennisball"}, {src:"toiletpaper.png", id:"toiletpaper"}, {src:"back.png", id:"back"}, {src:"sound_on.png", id:"soundon"}, {src:"sound_mute.png", id:"soundmute"}, {src:"menu.png", id:"menu"}, {src:"Katamari Damacy Soundtrack - 05 - Lonely Rolling Star.mp3", id:"music"}];
+	var preload = new createjs.LoadQueue(false, contentPath); // use true if on the same server
+	preload.installPlugin(createjs.Sound);
+	preload.on("complete", init);
+	preload.loadManifest(manifest);
+
+	//A P P L I C A T I O N  C O D E
+	function init(){
+		createjs.Sound.play("music", {loop:10});
+
+		katamari = app.game();
+
+		var gamePages = new zim.Pages(stage,[
+			{page:katamari.intro,  swipe:[katamari.info, katamari.gameStart, null, null]},
+			{page:katamari.info,  swipe:[null, katamari.intro, null, null]}
+		], "slide", 500
+		);
+		stage.addChild(gamePages);
+
+		app.makeHotSpots(katamari, gamePages);	
+
+		stage.update();
+
+		// put resizing code in here (scaling="full" only)
+		frame.on("resize", function(e) {
+			stageW = frame.stageW;
+			stageH = frame.stageH;
+			
+			zim.scaleTo(katamari.intro, stage, 100, 100, "both");
+			zim.scaleTo(katamari.info, stage, 100, 100, "both");
+			zim.scaleTo(katamari.gameStart, stage, 100, 100, "both");
+
+			stage.update();
+		}); // end of resizing
+
+	} //END OF INIT
+
+}); //END OF frame.on ready
+</script>
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+</body>
+</html>
